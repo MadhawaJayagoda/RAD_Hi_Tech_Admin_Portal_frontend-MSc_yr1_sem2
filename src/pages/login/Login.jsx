@@ -1,10 +1,9 @@
 import { useRef, useState, useEffect, useContext } from "react";
 import AuthContext from "../../context/AuthProvider";
-
 import axios from "../../common/Axios";
-const LOGIN_URL = "/auth";
+const LOGIN_URL = "/user/login";
 
-const Login = () => {
+const Login = ({ setIsLoggedIn }) => {
   const { setAuth } = useContext(AuthContext);
   const userRef = useRef();
   const errRef = useRef();
@@ -24,9 +23,26 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setUser("");
-    setPwd("");
-    setSuccess(true);
+    try {
+      const response = await axios.post(
+        LOGIN_URL,
+        {
+          Email: user,
+          Password: pwd,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data["Status"]) {
+        setSuccess(true);
+        setIsLoggedIn(true);
+      }
+    } catch (err) {
+      setErrMsg("Login Failed");
+    }
   };
 
   return (
