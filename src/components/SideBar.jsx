@@ -7,12 +7,12 @@ function SideBar() {
   return (
     <div className="sidebar">
       <div className="listLogo">
-        <ActionAreaCard />
+        <ActionAreaCard imgHeight={50} />
       </div>
       <ul className="sidebarList">
         {SideBarData.map((val, key) => {
           return (
-            <Link to={val.link} style={{ textDecoration: "none" }}>
+            <Link to={val.link} style={{ textDecoration: "none" }} key={key}>
               <li key={key} className="listRow">
                 <div className="listIcon">{val.icon}</div>
                 <div className="listTitle">{val.title}</div>
