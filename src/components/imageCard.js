@@ -1,7 +1,7 @@
 import * as React from "react";
 import CardMedia from "@mui/material/CardMedia";
 
-export default function ActionAreaCard() {
+export default function ActionAreaCard({ imgHeight }) {
   return (
     <CardMedia
       component="img"
