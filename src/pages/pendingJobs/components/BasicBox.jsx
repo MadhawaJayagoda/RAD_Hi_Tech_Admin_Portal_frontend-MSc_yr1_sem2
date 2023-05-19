@@ -9,7 +9,7 @@ function BasicBox({ job }) {
     <Box sx={boxStyles}>
       <h5 style={{ paddingTop: "8px", paddingLeft: "20px" }}>
         {" "}
-        Job ID - {job.jobId}
+        Job ID - {job.InspectionID}
       </h5>
       <Button
         sx={{ backgroundColor: "#8083CBD" }}
@@ -17,7 +17,13 @@ function BasicBox({ job }) {
         endIcon={<SendIcon />}
       >
         {" "}
-        <Link to="/jobdetails" style={{ textDecoration: "none" }}>
+        <Link
+          to={{
+            pathname: "/jobdetails",
+            state: { jobData: job, haveState: false },
+          }}
+          style={{ textDecoration: "none" }}
+        >
           View
         </Link>
       </Button>
