@@ -3,7 +3,7 @@ import AuthContext from "../../context/AuthProvider";
 import axios from "../../common/Axios";
 const LOGIN_URL = "/user/login";
 
-const Login = ({ setIsLoggedIn }) => {
+const Login = ({ setIsLoggedIn, setUserCode }) => {
   const { setAuth } = useContext(AuthContext);
   const userRef = useRef();
   const errRef = useRef();
@@ -39,6 +39,12 @@ const Login = ({ setIsLoggedIn }) => {
       if (response.data["Status"]) {
         setSuccess(true);
         setIsLoggedIn(true);
+        setUserCode(response.data["UserData"].UserCode);
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${response.data["Result"].AccessToken}`;
+        localStorage.setItem("isLoggedIn", true);
+        localStorage.setItem("userCode", response.data["UserData"].UserCode);
       }
     } catch (err) {
       setErrMsg("Login Failed");
