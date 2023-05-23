@@ -39,12 +39,12 @@ function JobDetails() {
           },
           {
             label: "Exit",
-            onClick: () => history.push("/"),
+            onClick: () => history.goBack(),
           },
         ],
       });
     } else {
-      history.push("/");
+      history.goBack();
     }
   };
 
@@ -81,10 +81,10 @@ function JobDetails() {
       newJobDetails.Status != "" &&
       newJobDetails.Remarks != ""
     ) {
-      const response = await axios.post(
+      const response = await axios.patch(
         UPDATE_INSPECTION,
         {
-          InspectionID: newJobDetails.InspectionID,
+          InspectionID: newJobDetails._id,
           Approvedby: newJobDetails.Approvedby,
           Status: newJobDetails.Status,
           Remarks: newJobDetails.Remarks,
@@ -108,7 +108,7 @@ function JobDetails() {
 
   return (
     <div className="JobDetailsCard">
-      <Card sx={{ minWidth: 275, backgroundColor: "#D9D9D9" }}>
+      <Card sx={{ minWidth: 1100, backgroundColor: "#D9D9D9" }}>
         <CardContent>
           <div
             style={{
