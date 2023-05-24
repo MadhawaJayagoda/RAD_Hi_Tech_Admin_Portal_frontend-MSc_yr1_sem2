@@ -98,6 +98,7 @@ function JobDetails() {
       if (response.status === 200) {
         toast.success("Successfully submitted!");
         history.push("/");
+        window.location.reload();
       } else {
         toast.error("Something went wrong!");
       }
