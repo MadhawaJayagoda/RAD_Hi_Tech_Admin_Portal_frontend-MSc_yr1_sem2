@@ -3,6 +3,8 @@ import SideBar from "../../components/SideBar";
 import PendingJobs from "../pendingJobs/PendingJobs";
 import AcceptedJobs from "../acceptedJobs/AcceptedJobs";
 import Rejectedjobs from "../rejectedJobs/RejectedJobs";
+import HistoryActions from "../history/historyActions";
+import Dashboard from "../dashboard/Dashboard";
 import JobDetails from "../jobDetails/JobDetails";
 import { Switch, Route } from "react-router-dom";
 import NavBarProfile from "../../components/NavBarProfile";
@@ -12,7 +14,10 @@ import { userDef } from "./types/user";
 function Home({ userCode, setIsLoggedIn, setUserCode }) {
   const FETCH_USER_BY_ID = "/user/fetch/ID";
   const FETCH_PENDING_JOBS = "/inspection/fetch";
+  const FETCH_ACTIONS_HISTORY = "/actionhistory";
+  const [pendingJobs, setPendingJobs] = useState([]);
   const [user, setUser] = useState(userDef);
+  const [actionHistory, setActionHistory] = useState([]);
   const [pendingInspections, setPendingInspections] = useState([]);
   const [acceptedInspections, setAcceptedInspections] = useState([]);
   const [rejectedInspections, setRejectedInspections] = useState([]);
@@ -20,6 +25,7 @@ function Home({ userCode, setIsLoggedIn, setUserCode }) {
   useEffect(() => {
     fetchUserData();
     fetchInspectionPendingJobs();
+    fetchActionsHistory();
   }, []);
 
   const fetchUserData = async () => {
@@ -35,16 +41,16 @@ function Home({ userCode, setIsLoggedIn, setUserCode }) {
       }
     );
     const userData = {
-      Email: response.data["Result"]?.Email,
-      FirstName: response.data["Result"]?.FirstName,
+      Email: response["data"].Email,
+      FirstName: response["data"].FirstName,
       IsActive: true,
       IsDeleted: false,
-      LastName: response.data["Result"]?.LastName,
-      PhoneNo: response.data["Result"]?.PhoneNo,
+      LastName: response["data"].LastName,
+      PhoneNo: response["data"].PhoneNo,
       ProfileImage: "",
-      UserCode: response.data["Result"]?.UserCode,
-      UserName: response.data["Result"]?.UserName,
-      UserType: response.data["Result"]?.UserType,
+      UserCode: response["data"].UserCode,
+      UserName: response["data"].UserName,
+      UserType: response["data"].UserType,
     };
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -58,19 +64,29 @@ function Home({ userCode, setIsLoggedIn, setUserCode }) {
         headers: { "Content-Type": "application/json" },
       }
     );
-    setPendingInspections(filterPendingInspections(response?.data));
-    setAcceptedInspections(filterAccpetedInspections(response?.data));
-    setRejectedInspections(filterRejectedInspections(response?.data));
+    setPendingJobs(response.data);
+    setPendingInspections(filterPendingInspections(response.data));
+    setAcceptedInspections(filterAccpetedInspections(response.data));
+    setRejectedInspections(filterRejectedInspections(response.data));
+  };
+
+  const fetchActionsHistory = async () => {
+    const response = await axios.get(
+      FETCH_ACTIONS_HISTORY,
+      {},
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    setActionHistory(response.data);
   };
 
   const filterPendingInspections = (data) => {
     return data.filter((item) => item.Status === "pending");
   };
-
   const filterAccpetedInspections = (data) => {
     return data.filter((item) => item.Status === "approved");
   };
-
   const filterRejectedInspections = (data) => {
     return data.filter((item) => item.Status === "rejected");
   };
@@ -86,8 +102,8 @@ function Home({ userCode, setIsLoggedIn, setUserCode }) {
           />
         </div>
         <Switch>
-          <Route path="/pending" exact>
-            <PendingJobs />
+          <Route path="/pending">
+            <PendingJobs pendingJobs={pendingInspections} />
           </Route>
           <Route path="/accepted">
             <AcceptedJobs approvedJobs={acceptedInspections} />
@@ -96,7 +112,19 @@ function Home({ userCode, setIsLoggedIn, setUserCode }) {
             <Rejectedjobs rejectedJobs={rejectedInspections} />
           </Route>
           <Route path="/jobdetails" component={JobDetails} />
+          <Route path="/history">
+            <HistoryActions actionHistory={actionHistory} />
+          </Route>
           <Route path="/">
+            <Dashboard
+              summaryData={{
+                rejected: rejectedInspections.length,
+                accepted: acceptedInspections.length,
+                pending: pendingInspections.length,
+              }}
+            />
+          </Route>
+          <Route>
             <PendingJobs pendingJobs={pendingInspections} />
           </Route>
         </Switch>
